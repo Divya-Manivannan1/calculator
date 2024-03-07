@@ -1,0 +1,9 @@
+.calculator {
+  display: grid;
+  grid-template: 1fr 1fr 1fr 1fr 1fr 1fr / 1fr 1fr 1fr 1fr;
+  gap: 1rem;
+
+  &__output {
+    grid-area: 1 / 1/ 2/ 5;
+  }
+}

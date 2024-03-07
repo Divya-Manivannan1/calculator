@@ -1,0 +1,14 @@
+@use "../utils/variables" as *;
+
+.number-button {
+  background-color: $button-color;
+
+  &:hover {
+    background-color: $button-hover-color;
+  }
+
+  &:active {
+    background-color: $text-color;
+    color: $button-hover-color;
+  }
+}
