@@ -66,24 +66,21 @@ const addOperaterToExpression = (event: Event): void => {
   }
 };
 
-const subtract = (ans: string, num: string): string => (ans = `${+ans - +num}`);
+//Callback function - Subtraction and Addition
+const add = (ans: string, num: string): string => `${+ans + +num}`;
 
 const calculateExpression = (): string => {
   //Calculates the value of the expression
-  const subExpressions: string[] = expressionToBeCalculated.split("-");
-  let answer: string = "";
+  const expressionToBeAdded = expressionToBeCalculated.replace(/-/g, "+-");
+  let subExpressions: string[] = expressionToBeAdded.split("+");
+
   console.table(subExpressions);
-  subExpressions.map((subExpression): string => {
-    if (subExpression.includes("+")) return "a";
+  subExpressions = subExpressions.map((subExpression): string => {
     if (subExpression.includes("*")) return "m";
     if (subExpression.includes("/")) return "d";
     return subExpression;
   });
-  answer = subExpressions.reduce(subtract);
-  console.log(expressionToBeCalculated);
-  console.table(subExpressions);
-  console.log(answer);
-  return answer;
+  return subExpressions.reduce(add);
 };
 
 // sending put display
