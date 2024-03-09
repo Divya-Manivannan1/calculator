@@ -1,6 +1,6 @@
 import "./styles/style.scss";
 
-//declaring the html elements
+//DOM ELEMENTS DECLARATION
 
 const calculatorOutput = document.querySelector<HTMLDivElement>(
   ".calculator__output"
@@ -12,7 +12,7 @@ const numberButtons =
 const operatorButtons =
   document.querySelectorAll<HTMLButtonElement>(".operator-button");
 
-//Null check
+//NULL CHECK
 
 if (
   !calculatorOutput ||
@@ -23,18 +23,17 @@ if (
   throw new Error("Issue with the selector");
 }
 
-// declaring other variables
+// VARIABLE DECLARATIONS
 let answer: number = 0;
 let expressionToBeCalculated: string = "";
 let hasDecimalPoint: boolean = false;
 let isLastInputSymbol = true;
 
-//All the functions are declared
+//FUNCTION DECLARATIONS
 
 const addNumberToExpression = (event: Event): void => {
   //Checks if the number already has a decimal point on it and adds the number to the expression
   const element = event.currentTarget as HTMLButtonElement;
-
   if (element.value == ".") {
     if (hasDecimalPoint == true) return;
     else {
@@ -44,31 +43,47 @@ const addNumberToExpression = (event: Event): void => {
       hasDecimalPoint = true;
     }
   }
-
   isLastInputSymbol = false;
   expressionToBeCalculated += element.value;
-
   calculatorInput.textContent = expressionToBeCalculated;
+  calculatorOutput.textContent = `${calculateExpression()}`;
 };
 
 const addOperaterToExpression = (event: Event): void => {
   //Checks if the last entered value is a operator and adds the operator to the expression
-
   const element = event.currentTarget as HTMLButtonElement;
-
   if (isLastInputSymbol) {
     return;
   } else {
     if (expressionToBeCalculated[expressionToBeCalculated.length - 1] == ".") {
       expressionToBeCalculated += "0";
     }
-
     isLastInputSymbol = true;
     expressionToBeCalculated += element.value;
     hasDecimalPoint = false;
 
     calculatorInput.textContent = expressionToBeCalculated;
   }
+};
+
+const subtract = (ans: string, num: string): string => (ans = `${+ans - +num}`);
+
+const calculateExpression = (): string => {
+  //Calculates the value of the expression
+  const subExpressions: string[] = expressionToBeCalculated.split("-");
+  let answer: string = "";
+  console.table(subExpressions);
+  subExpressions.map((subExpression): string => {
+    if (subExpression.includes("+")) return "a";
+    if (subExpression.includes("*")) return "m";
+    if (subExpression.includes("/")) return "d";
+    return subExpression;
+  });
+  answer = subExpressions.reduce(subtract);
+  console.log(expressionToBeCalculated);
+  console.table(subExpressions);
+  console.log(answer);
+  return answer;
 };
 
 // sending put display
