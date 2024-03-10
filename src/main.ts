@@ -68,22 +68,34 @@ const addOperaterToExpression = (event: Event): void => {
 
 //Callback function - Subtraction and Addition
 const add = (ans: string, num: string): string => `${+ans + +num}`;
+//Callback function - Multiplication
+const multiply = (ans: string, num: string): string => `${+ans * +num}`;
 
 const calculateExpression = (): string => {
-  //Calculates the value of the expression
-  const expressionToBeAdded = expressionToBeCalculated.replace(/-/g, "+-");
-  let subExpressions: string[] = expressionToBeAdded.split("+");
-
-  console.table(subExpressions);
+  /*Calculates the value of the expression:
+    1. By changing - to +-, both asition and subtraction get the same priority. Eg: "2-1" => "2+-1" => [2]+[-1] => 1
+    2. The expression is split by the operators with the lowest priority first. So that the operation with the highest priority happens first.
+    
+  */
+  const modifiedExpression = expressionToBeCalculated.replace(/-/g, "+-");
+  let subExpressions: string[] = modifiedExpression.split("+");
   subExpressions = subExpressions.map((subExpression): string => {
-    if (subExpression.includes("*")) return "m";
-    if (subExpression.includes("/")) return "d";
+    if (/[^0-9]/.test(subExpression)) return multiplyExpression(subExpression);
     return subExpression;
   });
   return subExpressions.reduce(add);
 };
 
-// sending put display
+const multiplyExpression = (expressionToBeMultiplied: string): string => {
+  let subExpressions: string[] = expressionToBeMultiplied.split("*");
+  subExpressions = subExpressions.map((subExpression): string => {
+    if (subExpression.includes("*")) return "";
+    return subExpression;
+  });
+  return subExpressions.reduce(multiply);
+};
+
+// sending out display
 
 calculatorOutput.textContent = `${answer}`;
 calculatorInput.textContent = expressionToBeCalculated;
