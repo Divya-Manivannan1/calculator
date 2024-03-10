@@ -70,6 +70,8 @@ const addOperaterToExpression = (event: Event): void => {
 const add = (ans: string, num: string): string => `${+ans + +num}`;
 //Callback function - Multiplication
 const multiply = (ans: string, num: string): string => `${+ans * +num}`;
+//Callback function - Division
+const divide = (ans: string, num: string): string => `${+ans / +num}`;
 
 const calculateExpression = (): string => {
   /*Calculates the value of the expression:
@@ -80,7 +82,8 @@ const calculateExpression = (): string => {
   const modifiedExpression = expressionToBeCalculated.replace(/-/g, "+-");
   let subExpressions: string[] = modifiedExpression.split("+");
   subExpressions = subExpressions.map((subExpression): string => {
-    if (/[^0-9]/.test(subExpression)) return multiplyExpression(subExpression);
+    if (subExpression.includes("*") || subExpression.includes("/"))
+      return multiplyExpression(subExpression);
     return subExpression;
   });
   return subExpressions.reduce(add);
@@ -89,12 +92,22 @@ const calculateExpression = (): string => {
 const multiplyExpression = (expressionToBeMultiplied: string): string => {
   let subExpressions: string[] = expressionToBeMultiplied.split("*");
   subExpressions = subExpressions.map((subExpression): string => {
-    if (subExpression.includes("*")) return "";
+    if (subExpression.includes("/")) return divideExpression(subExpression);
     return subExpression;
   });
   return subExpressions.reduce(multiply);
 };
 
+const divideExpression = (expressionToBeDivided: string): string => {
+  let subExpressions: string[] = expressionToBeDivided.split("/");
+  console.table(subExpressions);
+  subExpressions = subExpressions.map((subExpression): string => {
+    if (subExpression.includes("^")) return "";
+    return subExpression;
+  });
+  console.log(subExpressions.reduce(divide));
+  return subExpressions.reduce(divide);
+};
 // sending out display
 
 calculatorOutput.textContent = `${answer}`;
