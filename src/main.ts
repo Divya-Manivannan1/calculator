@@ -78,6 +78,7 @@ const addOpenBracketToExpression = (): void => {
     expressionToBeDisplayed += "*";
   }
   expressionToBeDisplayed += "(";
+  isLastInputSymbol = true;
   amountOfOpenBrackets++;
   calculatorInput.textContent = expressionToBeDisplayed;
 };
@@ -111,27 +112,30 @@ const calculateExpression = (expressionToBeCalculated: string): string => {
     <-- TODO: change the .includes "" inside map into regex -->
     
   */
-  const modifiedExpression = expressionToBeCalculated.replace(/-/g, "+-");
-  if (
-    modifiedExpression.includes("+") ||
-    modifiedExpression.includes("*") ||
-    modifiedExpression.includes("/") ||
-    modifiedExpression.includes("^")
-  )
-    return addExpression(modifiedExpression);
-  return "";
+  let modifiedExpression = expressionToBeCalculated.replace(/-/g, "+-");
+  modifiedExpression = modifiedExpression.concat(
+    ")".repeat(amountOfOpenBrackets)
+  );
+  while (modifiedExpression.includes("(")) {
+    let string1: string = modifiedExpression.slice(
+      0,
+      modifiedExpression.lastIndexOf("(")
+    );
+    let string2: string = modifiedExpression.slice(
+      modifiedExpression.lastIndexOf("(") + 1
+    );
+    let string3: string = string2.slice(string2.indexOf(")") + 1);
+    string2 = string2.slice(0, string2.indexOf(")"));
+    string2 = addExpression(string2);
+    modifiedExpression = string1.concat(string2, string3);
+  }
+  return addExpression(modifiedExpression);
 };
 
 const addExpression = (expressionToBeAdded: string): string => {
   let subExpressions: string[] = expressionToBeAdded.split("+");
   subExpressions = subExpressions.map((subExpression): string => {
-    if (
-      subExpression.includes("*") ||
-      subExpression.includes("/") ||
-      subExpression.includes("^")
-    )
-      return multiplyExpression(subExpression);
-    return subExpression;
+    return multiplyExpression(subExpression);
   });
   return subExpressions.reduce(add);
 };
@@ -139,9 +143,7 @@ const addExpression = (expressionToBeAdded: string): string => {
 const multiplyExpression = (expressionToBeMultiplied: string): string => {
   let subExpressions: string[] = expressionToBeMultiplied.split("*");
   subExpressions = subExpressions.map((subExpression): string => {
-    if (subExpression.includes("/") || subExpression.includes("^"))
-      return divideExpression(subExpression);
-    return subExpression;
+    return divideExpression(subExpression);
   });
   return subExpressions.reduce(multiply);
 };
@@ -149,9 +151,7 @@ const multiplyExpression = (expressionToBeMultiplied: string): string => {
 const divideExpression = (expressionToBeDivided: string): string => {
   let subExpressions: string[] = expressionToBeDivided.split("/");
   subExpressions = subExpressions.map((subExpression): string => {
-    if (subExpression.includes("^"))
-      return exponentiationExpression(subExpression);
-    return subExpression;
+    return exponentiationExpression(subExpression);
   });
   return subExpressions.reduce(divide);
 };
