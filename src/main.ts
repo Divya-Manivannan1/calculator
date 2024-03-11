@@ -117,15 +117,20 @@ const divideExpression = (expressionToBeDivided: string): string => {
   return subExpressions.reduce(divide);
 };
 
-const isEven = (element: string) => +element % 2 == 0;
+const isEven = (element: string) => {
+  return +element % 2 == 0;
+};
 
 const exponentiationExpression = (
   expressionToBeExponentiated: string
 ): string => {
   const subExpressions: string[] = expressionToBeExponentiated.split("^");
   let answer: string = subExpressions.reduce(power);
-  if (subExpressions[0][0] == "-" && subExpressions.some(isEven)) {
-    answer = "-" + answer;
+  if (subExpressions[0][0] == "-") {
+    subExpressions.shift();
+    if (subExpressions.some(isEven)) {
+      answer = "-" + answer;
+    }
   }
   return answer;
 };
