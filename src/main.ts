@@ -13,6 +13,10 @@ const operatorButtons =
   document.querySelectorAll<HTMLButtonElement>(".operator-button");
 const bracketButton =
   document.querySelectorAll<HTMLButtonElement>(".bracket-button");
+const deleteButton =
+  document.querySelector<HTMLButtonElement>(".delete-button");
+const clearExpressionButton =
+  document.querySelector<HTMLButtonElement>(".clear-operation");
 
 //NULL CHECK
 
@@ -20,13 +24,14 @@ if (
   !calculatorOutput ||
   !calculatorInput ||
   !numberButtons ||
-  !operatorButtons
+  !operatorButtons ||
+  !deleteButton ||
+  !clearExpressionButton
 ) {
   throw new Error("Issue with the selector");
 }
 
 // VARIABLE DECLARATIONS
-let answer: number = 0;
 let expressionToBeDisplayed: string = "";
 let hasDecimalPoint: boolean = false;
 let isLastInputSymbol: boolean = true;
@@ -175,9 +180,23 @@ const exponentiationExpression = (
   return ans;
 };
 
+const handleDeleteButton = (): void => {
+  expressionToBeDisplayed = expressionToBeDisplayed.slice(
+    0,
+    expressionToBeDisplayed.length - 1
+  );
+  calculatorInput.textContent = expressionToBeDisplayed;
+};
+
+const handleClearExpressionButtton = (): void => {
+  expressionToBeDisplayed = "";
+  calculatorInput.textContent = expressionToBeDisplayed;
+  calculatorOutput.textContent = "";
+};
+
 // sending out display
 
-calculatorOutput.textContent = `${answer}`;
+calculatorOutput.textContent = "";
 calculatorInput.textContent = expressionToBeDisplayed;
 
 //Event listeners
@@ -192,3 +211,5 @@ operatorButtons.forEach((operatorButton) =>
 
 bracketButton[0].addEventListener("click", addOpenBracketToExpression);
 bracketButton[1].addEventListener("click", addCloseBracketToExpression);
+deleteButton.addEventListener("click", handleDeleteButton);
+clearExpressionButton.addEventListener("click", handleClearExpressionButtton);
