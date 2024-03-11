@@ -25,7 +25,7 @@ if (
 
 // VARIABLE DECLARATIONS
 let answer: number = 0;
-let expressionToBeCalculated: string = "";
+let expressionToBeDisplayed: string = "";
 let hasDecimalPoint: boolean = false;
 let isLastInputSymbol = true;
 
@@ -38,15 +38,17 @@ const addNumberToExpression = (event: Event): void => {
     if (hasDecimalPoint == true) return;
     else {
       if (isLastInputSymbol) {
-        expressionToBeCalculated += "0";
+        expressionToBeDisplayed += "0";
       }
       hasDecimalPoint = true;
     }
   }
   isLastInputSymbol = false;
-  expressionToBeCalculated += element.value;
-  calculatorInput.textContent = expressionToBeCalculated;
-  calculatorOutput.textContent = `${calculateExpression()}`;
+  expressionToBeDisplayed += element.value;
+  calculatorInput.textContent = expressionToBeDisplayed;
+  calculatorOutput.textContent = `${calculateExpression(
+    expressionToBeDisplayed
+  )}`;
 };
 
 const addOperaterToExpression = (event: Event): void => {
@@ -55,14 +57,14 @@ const addOperaterToExpression = (event: Event): void => {
   if (isLastInputSymbol) {
     return;
   } else {
-    if (expressionToBeCalculated[expressionToBeCalculated.length - 1] == ".") {
-      expressionToBeCalculated += "0";
+    if (expressionToBeDisplayed[expressionToBeDisplayed.length - 1] == ".") {
+      expressionToBeDisplayed += "0";
     }
     isLastInputSymbol = true;
-    expressionToBeCalculated += element.value;
+    expressionToBeDisplayed += element.value;
     hasDecimalPoint = false;
 
-    calculatorInput.textContent = expressionToBeCalculated;
+    calculatorInput.textContent = expressionToBeDisplayed;
   }
 };
 
@@ -74,8 +76,12 @@ const multiply = (ans: string, num: string): string => `${+ans * +num}`;
 const divide = (ans: string, num: string): string => `${+ans / +num}`;
 //Callback function - Exponentiation
 const power = (ans: string, num: string): string => `${Math.pow(+ans, +num)}`;
+//Callback function - check if the parameter is even
+const isEven = (element: string) => {
+  return +element % 2 == 0;
+};
 
-const calculateExpression = (): string => {
+const calculateExpression = (expressionToBeCalculated: string): string => {
   /*Calculates the value of the expression:
     1. By changing - to +-, both asition and subtraction get the same priority. Eg: "2-1" => "2+-1" => [2]+[-1] => 1
     2. The expression is split by the operators with the lowest priority first. So that the operation with the highest priority happens first.
@@ -84,7 +90,18 @@ const calculateExpression = (): string => {
     
   */
   const modifiedExpression = expressionToBeCalculated.replace(/-/g, "+-");
-  let subExpressions: string[] = modifiedExpression.split("+");
+  if (
+    modifiedExpression.includes("+") ||
+    modifiedExpression.includes("*") ||
+    modifiedExpression.includes("/") ||
+    modifiedExpression.includes("^")
+  )
+    return addExpression(modifiedExpression);
+  return "";
+};
+
+const addExpression = (expressionToBeAdded: string): string => {
+  let subExpressions: string[] = expressionToBeAdded.split("+");
   subExpressions = subExpressions.map((subExpression): string => {
     if (
       subExpression.includes("*") ||
@@ -117,13 +134,14 @@ const divideExpression = (expressionToBeDivided: string): string => {
   return subExpressions.reduce(divide);
 };
 
-const isEven = (element: string) => {
-  return +element % 2 == 0;
-};
-
 const exponentiationExpression = (
   expressionToBeExponentiated: string
 ): string => {
+  /*If the exponent is even then the - sign will be lost. To solve that:
+  1. check if the base value is negative
+  2. check if any of the values (apart from the first one) is even
+  3. if both 1 and 2 are true, add a "-" to the start of the answer string
+  */
   const subExpressions: string[] = expressionToBeExponentiated.split("^");
   let answer: string = subExpressions.reduce(power);
   if (subExpressions[0][0] == "-") {
@@ -138,7 +156,7 @@ const exponentiationExpression = (
 // sending out display
 
 calculatorOutput.textContent = `${answer}`;
-calculatorInput.textContent = expressionToBeCalculated;
+calculatorInput.textContent = expressionToBeDisplayed;
 
 //Event listeners
 
