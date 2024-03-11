@@ -15,6 +15,8 @@ const bracketButton =
   document.querySelectorAll<HTMLButtonElement>(".bracket-button");
 const deleteButton =
   document.querySelector<HTMLButtonElement>(".delete-button");
+const clearExpressionButton =
+  document.querySelector<HTMLButtonElement>(".clear-operation");
 
 //NULL CHECK
 
@@ -23,7 +25,8 @@ if (
   !calculatorInput ||
   !numberButtons ||
   !operatorButtons ||
-  !deleteButton
+  !deleteButton ||
+  !clearExpressionButton
 ) {
   throw new Error("Issue with the selector");
 }
@@ -185,6 +188,12 @@ const handleDeleteButton = (): void => {
   calculatorInput.textContent = expressionToBeDisplayed;
 };
 
+const handleClearExpressionButtton = (): void => {
+  expressionToBeDisplayed = "";
+  calculatorInput.textContent = expressionToBeDisplayed;
+  calculatorOutput.textContent = "";
+};
+
 // sending out display
 
 calculatorOutput.textContent = "";
@@ -203,3 +212,4 @@ operatorButtons.forEach((operatorButton) =>
 bracketButton[0].addEventListener("click", addOpenBracketToExpression);
 bracketButton[1].addEventListener("click", addCloseBracketToExpression);
 deleteButton.addEventListener("click", handleDeleteButton);
+clearExpressionButton.addEventListener("click", handleClearExpressionButtton);
