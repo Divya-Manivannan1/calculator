@@ -11,6 +11,8 @@ const numberButtons =
   document.querySelectorAll<HTMLButtonElement>(".number-button");
 const operatorButtons =
   document.querySelectorAll<HTMLButtonElement>(".operator-button");
+const bracketButton =
+  document.querySelectorAll<HTMLButtonElement>(".bracket-button");
 
 //NULL CHECK
 
@@ -27,13 +29,16 @@ if (
 let answer: number = 0;
 let expressionToBeDisplayed: string = "";
 let hasDecimalPoint: boolean = false;
-let isLastInputSymbol = true;
+let isLastInputSymbol: boolean = true;
+let amountOfOpenBrackets = 0;
 
 //FUNCTION DECLARATIONS
 
 const addNumberToExpression = (event: Event): void => {
   //Checks if the number already has a decimal point on it and adds the number to the expression
   const element = event.currentTarget as HTMLButtonElement;
+  if (expressionToBeDisplayed[expressionToBeDisplayed.length - 1] == ")")
+    expressionToBeDisplayed += "*";
   if (element.value == ".") {
     if (hasDecimalPoint == true) return;
     else {
@@ -68,6 +73,24 @@ const addOperaterToExpression = (event: Event): void => {
   }
 };
 
+const addOpenBracketToExpression = (): void => {
+  if (!isLastInputSymbol) {
+    expressionToBeDisplayed += "*";
+  }
+  expressionToBeDisplayed += "(";
+  isLastInputSymbol = true;
+  amountOfOpenBrackets++;
+  calculatorInput.textContent = expressionToBeDisplayed;
+};
+
+const addCloseBracketToExpression = (): void => {
+  if (!isLastInputSymbol && amountOfOpenBrackets > 0) {
+    expressionToBeDisplayed += ")";
+    amountOfOpenBrackets--;
+    calculatorInput.textContent = expressionToBeDisplayed;
+  }
+};
+
 //Callback function - Subtraction and Addition
 const add = (ans: string, num: string): string => `${+ans + +num}`;
 //Callback function - Multiplication
@@ -89,27 +112,30 @@ const calculateExpression = (expressionToBeCalculated: string): string => {
     <-- TODO: change the .includes "" inside map into regex -->
     
   */
-  const modifiedExpression = expressionToBeCalculated.replace(/-/g, "+-");
-  if (
-    modifiedExpression.includes("+") ||
-    modifiedExpression.includes("*") ||
-    modifiedExpression.includes("/") ||
-    modifiedExpression.includes("^")
-  )
-    return addExpression(modifiedExpression);
-  return "";
+  let modifiedExpression = expressionToBeCalculated.replace(/-/g, "+-");
+  modifiedExpression = modifiedExpression.concat(
+    ")".repeat(amountOfOpenBrackets)
+  );
+  while (modifiedExpression.includes("(")) {
+    let string1: string = modifiedExpression.slice(
+      0,
+      modifiedExpression.lastIndexOf("(")
+    );
+    let string2: string = modifiedExpression.slice(
+      modifiedExpression.lastIndexOf("(") + 1
+    );
+    let string3: string = string2.slice(string2.indexOf(")") + 1);
+    string2 = string2.slice(0, string2.indexOf(")"));
+    string2 = addExpression(string2);
+    modifiedExpression = string1.concat(string2, string3);
+  }
+  return addExpression(modifiedExpression);
 };
 
 const addExpression = (expressionToBeAdded: string): string => {
   let subExpressions: string[] = expressionToBeAdded.split("+");
   subExpressions = subExpressions.map((subExpression): string => {
-    if (
-      subExpression.includes("*") ||
-      subExpression.includes("/") ||
-      subExpression.includes("^")
-    )
-      return multiplyExpression(subExpression);
-    return subExpression;
+    return multiplyExpression(subExpression);
   });
   return subExpressions.reduce(add);
 };
@@ -117,9 +143,7 @@ const addExpression = (expressionToBeAdded: string): string => {
 const multiplyExpression = (expressionToBeMultiplied: string): string => {
   let subExpressions: string[] = expressionToBeMultiplied.split("*");
   subExpressions = subExpressions.map((subExpression): string => {
-    if (subExpression.includes("/") || subExpression.includes("^"))
-      return divideExpression(subExpression);
-    return subExpression;
+    return divideExpression(subExpression);
   });
   return subExpressions.reduce(multiply);
 };
@@ -127,9 +151,7 @@ const multiplyExpression = (expressionToBeMultiplied: string): string => {
 const divideExpression = (expressionToBeDivided: string): string => {
   let subExpressions: string[] = expressionToBeDivided.split("/");
   subExpressions = subExpressions.map((subExpression): string => {
-    if (subExpression.includes("^"))
-      return exponentiationExpression(subExpression);
-    return subExpression;
+    return exponentiationExpression(subExpression);
   });
   return subExpressions.reduce(divide);
 };
@@ -143,14 +165,14 @@ const exponentiationExpression = (
   3. if both 1 and 2 are true, add a "-" to the start of the answer string
   */
   const subExpressions: string[] = expressionToBeExponentiated.split("^");
-  let answer: string = subExpressions.reduce(power);
+  let ans: string = subExpressions.reduce(power);
   if (subExpressions[0][0] == "-") {
     subExpressions.shift();
     if (subExpressions.some(isEven)) {
-      answer = "-" + answer;
+      ans = "-" + ans;
     }
   }
-  return answer;
+  return ans;
 };
 
 // sending out display
@@ -167,3 +189,6 @@ numberButtons.forEach((numberButton) =>
 operatorButtons.forEach((operatorButton) =>
   operatorButton.addEventListener("click", addOperaterToExpression)
 );
+
+bracketButton[0].addEventListener("click", addOpenBracketToExpression);
+bracketButton[1].addEventListener("click", addCloseBracketToExpression);
