@@ -11,6 +11,8 @@ const numberButtons =
   document.querySelectorAll<HTMLButtonElement>(".number-button");
 const operatorButtons =
   document.querySelectorAll<HTMLButtonElement>(".operator-button");
+const bracketButton =
+  document.querySelectorAll<HTMLButtonElement>(".bracket-button");
 
 //NULL CHECK
 
@@ -27,13 +29,16 @@ if (
 let answer: number = 0;
 let expressionToBeDisplayed: string = "";
 let hasDecimalPoint: boolean = false;
-let isLastInputSymbol = true;
+let isLastInputSymbol: boolean = true;
+let amountOfOpenBrackets = 0;
 
 //FUNCTION DECLARATIONS
 
 const addNumberToExpression = (event: Event): void => {
   //Checks if the number already has a decimal point on it and adds the number to the expression
   const element = event.currentTarget as HTMLButtonElement;
+  if (expressionToBeDisplayed[expressionToBeDisplayed.length - 1] == ")")
+    expressionToBeDisplayed += "*";
   if (element.value == ".") {
     if (hasDecimalPoint == true) return;
     else {
@@ -64,6 +69,23 @@ const addOperaterToExpression = (event: Event): void => {
     expressionToBeDisplayed += element.value;
     hasDecimalPoint = false;
 
+    calculatorInput.textContent = expressionToBeDisplayed;
+  }
+};
+
+const addOpenBracketToExpression = (): void => {
+  if (!isLastInputSymbol) {
+    expressionToBeDisplayed += "*";
+  }
+  expressionToBeDisplayed += "(";
+  amountOfOpenBrackets++;
+  calculatorInput.textContent = expressionToBeDisplayed;
+};
+
+const addCloseBracketToExpression = (): void => {
+  if (!isLastInputSymbol && amountOfOpenBrackets > 0) {
+    expressionToBeDisplayed += ")";
+    amountOfOpenBrackets--;
     calculatorInput.textContent = expressionToBeDisplayed;
   }
 };
@@ -143,14 +165,14 @@ const exponentiationExpression = (
   3. if both 1 and 2 are true, add a "-" to the start of the answer string
   */
   const subExpressions: string[] = expressionToBeExponentiated.split("^");
-  let answer: string = subExpressions.reduce(power);
+  let ans: string = subExpressions.reduce(power);
   if (subExpressions[0][0] == "-") {
     subExpressions.shift();
     if (subExpressions.some(isEven)) {
-      answer = "-" + answer;
+      ans = "-" + ans;
     }
   }
-  return answer;
+  return ans;
 };
 
 // sending out display
@@ -167,3 +189,6 @@ numberButtons.forEach((numberButton) =>
 operatorButtons.forEach((operatorButton) =>
   operatorButton.addEventListener("click", addOperaterToExpression)
 );
+
+bracketButton[0].addEventListener("click", addOpenBracketToExpression);
+bracketButton[1].addEventListener("click", addCloseBracketToExpression);
