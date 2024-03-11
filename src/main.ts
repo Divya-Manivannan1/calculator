@@ -72,17 +72,25 @@ const add = (ans: string, num: string): string => `${+ans + +num}`;
 const multiply = (ans: string, num: string): string => `${+ans * +num}`;
 //Callback function - Division
 const divide = (ans: string, num: string): string => `${+ans / +num}`;
+//Callback function - Exponentiation
+const power = (ans: string, num: string): string => `${Math.pow(+ans, +num)}`;
 
 const calculateExpression = (): string => {
   /*Calculates the value of the expression:
     1. By changing - to +-, both asition and subtraction get the same priority. Eg: "2-1" => "2+-1" => [2]+[-1] => 1
     2. The expression is split by the operators with the lowest priority first. So that the operation with the highest priority happens first.
+
+    <-- TODO: change the .includes "" inside map into regex -->
     
   */
   const modifiedExpression = expressionToBeCalculated.replace(/-/g, "+-");
   let subExpressions: string[] = modifiedExpression.split("+");
   subExpressions = subExpressions.map((subExpression): string => {
-    if (subExpression.includes("*") || subExpression.includes("/"))
+    if (
+      subExpression.includes("*") ||
+      subExpression.includes("/") ||
+      subExpression.includes("^")
+    )
       return multiplyExpression(subExpression);
     return subExpression;
   });
@@ -92,7 +100,8 @@ const calculateExpression = (): string => {
 const multiplyExpression = (expressionToBeMultiplied: string): string => {
   let subExpressions: string[] = expressionToBeMultiplied.split("*");
   subExpressions = subExpressions.map((subExpression): string => {
-    if (subExpression.includes("/")) return divideExpression(subExpression);
+    if (subExpression.includes("/") || subExpression.includes("^"))
+      return divideExpression(subExpression);
     return subExpression;
   });
   return subExpressions.reduce(multiply);
@@ -100,14 +109,27 @@ const multiplyExpression = (expressionToBeMultiplied: string): string => {
 
 const divideExpression = (expressionToBeDivided: string): string => {
   let subExpressions: string[] = expressionToBeDivided.split("/");
-  console.table(subExpressions);
   subExpressions = subExpressions.map((subExpression): string => {
-    if (subExpression.includes("^")) return "";
+    if (subExpression.includes("^"))
+      return exponentiationExpression(subExpression);
     return subExpression;
   });
-  console.log(subExpressions.reduce(divide));
   return subExpressions.reduce(divide);
 };
+
+const isEven = (element: string) => +element % 2 == 0;
+
+const exponentiationExpression = (
+  expressionToBeExponentiated: string
+): string => {
+  const subExpressions: string[] = expressionToBeExponentiated.split("^");
+  let answer: string = subExpressions.reduce(power);
+  if (subExpressions[0][0] == "-" && subExpressions.some(isEven)) {
+    answer = "-" + answer;
+  }
+  return answer;
+};
+
 // sending out display
 
 calculatorOutput.textContent = `${answer}`;
