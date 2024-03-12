@@ -5,6 +5,9 @@ import "./styles/style.scss";
 const calculatorOutput = document.querySelector<HTMLDivElement>(
   ".calculator__output"
 );
+const calculatorMemory = document.querySelector<HTMLDivElement>(
+  ".calculator__memory"
+);
 const calculatorInput =
   document.querySelector<HTMLDivElement>(".calculator__input");
 const numberButtons =
@@ -18,6 +21,8 @@ const deleteButton =
 const clearExpressionButton =
   document.querySelector<HTMLButtonElement>(".clear-operation");
 const equalButton = document.querySelector<HTMLButtonElement>(".equal-button");
+const clearMemoryButton =
+  document.querySelector<HTMLButtonElement>(".clear-memory");
 
 //NULL CHECK
 
@@ -28,13 +33,16 @@ if (
   !operatorButtons ||
   !deleteButton ||
   !clearExpressionButton ||
-  !equalButton
+  !equalButton ||
+  !calculatorMemory ||
+  !clearMemoryButton
 ) {
   throw new Error("Issue with the selector");
 }
 
 // VARIABLE DECLARATIONS
 let expressionToBeDisplayed: string = "";
+const memory: string[] = [];
 let hasDecimalPoint: boolean = false;
 let isLastInputSymbol: boolean = true;
 let amountOfOpenBrackets = 0;
@@ -197,10 +205,34 @@ const handleClearExpressionButtton = (): void => {
 };
 
 const handleEqualButtton = (): void => {
+  if (expressionToBeDisplayed.length > 0) {
+    let modifiedExpression: string = "";
+    if (isLastInputSymbol) {
+      modifiedExpression = expressionToBeDisplayed.slice(
+        0,
+        expressionToBeDisplayed.length - 1
+      );
+    } else {
+      modifiedExpression = expressionToBeDisplayed;
+    }
+    modifiedExpression = modifiedExpression.concat(
+      ")".repeat(amountOfOpenBrackets),
+      "<br>=",
+      calculatorOutput.textContent as string
+    );
+    memory.push(modifiedExpression);
+    calculatorMemory.innerHTML = memory.map((str) => `<p>${str}</p>`).join("");
+    calculatorInput.textContent = calculatorOutput.textContent as string;
+    calculatorOutput.textContent = "";
+    expressionToBeDisplayed = "";
+  }
+};
+
+const handleClearMemoryButtton = (): void => {
   console.log("hi");
-  calculatorInput.textContent = calculatorOutput.textContent as string;
-  calculatorOutput.textContent = "";
-  expressionToBeDisplayed = "";
+  memory.length = 0;
+  console.log("hi");
+  calculatorMemory.innerHTML = "";
 };
 
 // sending out display
@@ -223,3 +255,4 @@ bracketButton[1].addEventListener("click", addCloseBracketToExpression);
 deleteButton.addEventListener("click", handleDeleteButton);
 clearExpressionButton.addEventListener("click", handleClearExpressionButtton);
 equalButton.addEventListener("click", handleEqualButtton);
+clearMemoryButton.addEventListener("click", handleClearMemoryButtton);
