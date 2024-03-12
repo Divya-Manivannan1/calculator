@@ -2,27 +2,46 @@ import "./styles/style.scss";
 
 //DOM ELEMENTS DECLARATION
 
+const calculator = document.querySelector<HTMLDivElement>(".calculator");
+const buttonsDiv = document.querySelector<HTMLDivElement>(
+  ".calculator__buttons"
+);
 const calculatorOutput = document.querySelector<HTMLDivElement>(
-  ".calculator__output"
+  ".calculator__display--output"
 );
 const calculatorMemory = document.querySelector<HTMLDivElement>(
-  ".calculator__memory"
+  ".calculator__display--memory"
 );
-const calculatorInput =
-  document.querySelector<HTMLDivElement>(".calculator__input");
-const numberButtons =
-  document.querySelectorAll<HTMLButtonElement>(".number-button");
-const operatorButtons =
-  document.querySelectorAll<HTMLButtonElement>(".operator-button");
-const bracketButton =
-  document.querySelectorAll<HTMLButtonElement>(".bracket-button");
-const deleteButton =
-  document.querySelector<HTMLButtonElement>(".delete-button");
-const clearExpressionButton =
-  document.querySelector<HTMLButtonElement>(".clear-operation");
-const equalButton = document.querySelector<HTMLButtonElement>(".equal-button");
-const clearMemoryButton =
-  document.querySelector<HTMLButtonElement>(".clear-memory");
+const calculatorInput = document.querySelector<HTMLDivElement>(
+  ".calculator__display--input"
+);
+const numberButtons = document.querySelectorAll<HTMLButtonElement>(
+  ".calculator__button--number"
+);
+const operatorButtons = document.querySelectorAll<HTMLButtonElement>(
+  ".calculator__button--operator"
+);
+const bracketButton = document.querySelectorAll<HTMLButtonElement>(
+  ".calculator__button--bracket"
+);
+const deleteButton = document.querySelector<HTMLButtonElement>(
+  ".calculator__button--delete"
+);
+const clearExpressionButton = document.querySelector<HTMLButtonElement>(
+  ".calculator__button--clear-operation"
+);
+const viewMemory = document.querySelector<HTMLButtonElement>(
+  ".calculator__button--view-memory"
+);
+const equalButton = document.querySelector<HTMLButtonElement>(
+  ".calculator__button--equal"
+);
+const clearMemoryButton = document.querySelector<HTMLButtonElement>(
+  ".calculator__button--clear-memory"
+);
+const backButton = document.querySelector<HTMLButtonElement>(
+  ".calculator__button--back"
+);
 
 //NULL CHECK
 
@@ -35,7 +54,11 @@ if (
   !clearExpressionButton ||
   !equalButton ||
   !calculatorMemory ||
-  !clearMemoryButton
+  !clearMemoryButton ||
+  !viewMemory ||
+  !calculator ||
+  !buttonsDiv ||
+  !backButton
 ) {
   throw new Error("Issue with the selector");
 }
@@ -56,12 +79,10 @@ const addNumberToExpression = (event: Event): void => {
     expressionToBeDisplayed += "*";
   if (element.value == ".") {
     if (hasDecimalPoint == true) return;
-    else {
-      if (isLastInputSymbol) {
-        expressionToBeDisplayed += "0";
-      }
-      hasDecimalPoint = true;
+    else if (isLastInputSymbol) {
+      expressionToBeDisplayed += "0";
     }
+    hasDecimalPoint = true;
   }
   isLastInputSymbol = false;
   expressionToBeDisplayed += element.value;
@@ -122,10 +143,7 @@ const isEven = (element: string) => {
 const calculateExpression = (expressionToBeCalculated: string): string => {
   /*Calculates the value of the expression:
     1. By changing - to +-, both asition and subtraction get the same priority. Eg: "2-1" => "2+-1" => [2]+[-1] => 1
-    2. The expression is split by the operators with the lowest priority first. So that the operation with the highest priority happens first.
-
-    <-- TODO: change the .includes "" inside map into regex -->
-    
+    2. The expression is split by the operators with the lowest priority first. So that the operation with the highest priority happens first.   
   */
   let modifiedExpression = expressionToBeCalculated.replace(/-/g, "+-");
   modifiedExpression = modifiedExpression.concat(
@@ -180,6 +198,7 @@ const exponentiationExpression = (
   3. if both 1 and 2 are true, add a "-" to the start of the answer string
   */
   const subExpressions: string[] = expressionToBeExponentiated.split("^");
+  console.table(subExpressions)
   let ans: string = subExpressions.reduce(power);
   if (subExpressions[0][0] == "-") {
     subExpressions.shift();
@@ -235,6 +254,27 @@ const handleClearMemoryButtton = (): void => {
   calculatorMemory.innerHTML = "";
 };
 
+const handleViewMemoryButtton = (): void => {
+  calculator.style.display = "flex";
+  calculator.style.flexDirection = "column";
+  calculatorInput.style.display = "none";
+  calculatorOutput.style.display = "none";
+  buttonsDiv.style.display = "none";
+  calculatorMemory.style.display = "block";
+  backButton.style.display = "block";
+  backButton.style.height = "4rem";
+};
+
+const handleBackButton = (): void => {
+  calculator.style.display = "grid";
+  calculator.style.flexDirection = "column";
+  calculatorInput.style.display = "block";
+  calculatorOutput.style.display = "block";
+  buttonsDiv.style.display = "grid";
+  calculatorMemory.style.display = "none";
+  backButton.style.display = "none";
+};
+
 // sending out display
 
 calculatorOutput.textContent = "";
@@ -256,3 +296,5 @@ deleteButton.addEventListener("click", handleDeleteButton);
 clearExpressionButton.addEventListener("click", handleClearExpressionButtton);
 equalButton.addEventListener("click", handleEqualButtton);
 clearMemoryButton.addEventListener("click", handleClearMemoryButtton);
+viewMemory.addEventListener("click", handleViewMemoryButtton);
+backButton.addEventListener("click", handleBackButton);
