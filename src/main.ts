@@ -17,6 +17,7 @@ const deleteButton =
   document.querySelector<HTMLButtonElement>(".delete-button");
 const clearExpressionButton =
   document.querySelector<HTMLButtonElement>(".clear-operation");
+const equalButton = document.querySelector<HTMLButtonElement>(".equal-button");
 
 //NULL CHECK
 
@@ -26,7 +27,8 @@ if (
   !numberButtons ||
   !operatorButtons ||
   !deleteButton ||
-  !clearExpressionButton
+  !clearExpressionButton ||
+  !equalButton
 ) {
   throw new Error("Issue with the selector");
 }
@@ -194,6 +196,13 @@ const handleClearExpressionButtton = (): void => {
   calculatorOutput.textContent = "";
 };
 
+const handleEqualButtton = (): void => {
+  console.log("hi");
+  calculatorInput.textContent = calculatorOutput.textContent as string;
+  calculatorOutput.textContent = "";
+  expressionToBeDisplayed = "";
+};
+
 // sending out display
 
 calculatorOutput.textContent = "";
@@ -213,3 +222,4 @@ bracketButton[0].addEventListener("click", addOpenBracketToExpression);
 bracketButton[1].addEventListener("click", addCloseBracketToExpression);
 deleteButton.addEventListener("click", handleDeleteButton);
 clearExpressionButton.addEventListener("click", handleClearExpressionButtton);
+equalButton.addEventListener("click", handleEqualButtton);
