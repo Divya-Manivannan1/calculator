@@ -149,6 +149,18 @@ const calculateExpression = (expressionToBeCalculated: string): string => {
   modifiedExpression = modifiedExpression.concat(
     ")".repeat(amountOfOpenBrackets)
   );
+  while (modifiedExpression.includes("π")) {
+    const piIndex = modifiedExpression.indexOf("π");
+    let string1: string = modifiedExpression.slice(0, piIndex);
+    let string2: string = modifiedExpression.slice(piIndex + 1);
+    if (/\d/.test(string1[string1.length - 1])) {
+      string1 += "*";
+    }
+    if (/\d/.test(string2[0])) {
+      string2 = "*" + string2;
+    }
+    modifiedExpression = string1 + `${Math.PI}` + string2;
+  }
   while (modifiedExpression.includes("(")) {
     let string1: string = modifiedExpression.slice(
       0,
@@ -162,6 +174,7 @@ const calculateExpression = (expressionToBeCalculated: string): string => {
     string2 = addExpression(string2);
     modifiedExpression = string1.concat(string2, string3);
   }
+  console.log(modifiedExpression);
   return addExpression(modifiedExpression);
 };
 
@@ -198,7 +211,6 @@ const exponentiationExpression = (
   3. if both 1 and 2 are true, add a "-" to the start of the answer string
   */
   const subExpressions: string[] = expressionToBeExponentiated.split("^");
-  console.table(subExpressions)
   let ans: string = subExpressions.reduce(power);
   if (subExpressions[0][0] == "-") {
     subExpressions.shift();
@@ -248,9 +260,7 @@ const handleEqualButtton = (): void => {
 };
 
 const handleClearMemoryButtton = (): void => {
-  console.log("hi");
   memory.length = 0;
-  console.log("hi");
   calculatorMemory.innerHTML = "";
 };
 
