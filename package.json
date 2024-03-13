@@ -1,4 +1,6 @@
 {
+  "homepage": "https://divya-manivannan1.github.io/calculator/",
+  "author": "Divya",
   "name": "calculator",
   "private": true,
   "version": "0.0.0",
@@ -6,9 +8,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
+    "gh-pages": "^6.1.1",
     "sass": "^1.71.1",
     "typescript": "^5.2.2",
     "vite": "^5.1.4"
