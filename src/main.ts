@@ -90,6 +90,9 @@ const addNumberToExpression = (event: Event): void => {
   calculatorOutput.textContent = `${calculateExpression(
     expressionToBeDisplayed
   )}`;
+  if (element.value == ".") {
+    calculatorOutput.textContent += "0";
+  }
 };
 
 const addOperaterToExpression = (event: Event): void => {
@@ -222,17 +225,43 @@ const exponentiationExpression = (
 };
 
 const handleDeleteButton = (): void => {
+  const valueTobeDeleted =
+    expressionToBeDisplayed[expressionToBeDisplayed.length - 1];
+  switch (valueTobeDeleted) {
+    case "(":
+      amountOfOpenBrackets--;
+      break;
+    case ")":
+      amountOfOpenBrackets++;
+      break;
+    case "*":
+    case "/":
+    case "+":
+    case "-":
+    case "^":
+      isLastInputSymbol = false;
+      break;
+    case ".":
+      hasDecimalPoint = false;
+  }
   expressionToBeDisplayed = expressionToBeDisplayed.slice(
     0,
     expressionToBeDisplayed.length - 1
   );
   calculatorInput.textContent = expressionToBeDisplayed;
-};
+calculatorOutput.textContent = `${calculateExpression(
+  expressionToBeDisplayed
+)}`;
+if (calculatorOutput.textContent[calculatorOutput.textContent.length-1] == ".") {
+  calculatorOutput.textContent += "0";
+}};
 
 const handleClearExpressionButtton = (): void => {
   expressionToBeDisplayed = "";
   calculatorInput.textContent = expressionToBeDisplayed;
   calculatorOutput.textContent = "";
+  isLastInputSymbol = true;
+  amountOfOpenBrackets = 0;
 };
 
 const handleEqualButtton = (): void => {
@@ -253,8 +282,11 @@ const handleEqualButtton = (): void => {
     );
     memory.push(modifiedExpression);
     calculatorMemory.innerHTML = memory.map((str) => `${str}</br>`).join("");
-    calculatorInput.textContent = expressionToBeDisplayed = calculatorOutput.textContent as string;
+    calculatorInput.textContent = expressionToBeDisplayed =
+      calculatorOutput.textContent as string;
     calculatorOutput.textContent = "";
+    amountOfOpenBrackets = 0;
+    isLastInputSymbol = false;
   }
 };
 
