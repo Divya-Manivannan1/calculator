@@ -248,14 +248,13 @@ const handleEqualButtton = (): void => {
     }
     modifiedExpression = modifiedExpression.concat(
       ")".repeat(amountOfOpenBrackets),
-      "<br>=",
+      "<br>= ",
       calculatorOutput.textContent as string
     );
     memory.push(modifiedExpression);
-    calculatorMemory.innerHTML = memory.map((str) => `<p>${str}</p>`).join("");
-    calculatorInput.textContent = calculatorOutput.textContent as string;
+    calculatorMemory.innerHTML = memory.map((str) => `${str}</br>`).join("");
+    calculatorInput.textContent = expressionToBeDisplayed = calculatorOutput.textContent as string;
     calculatorOutput.textContent = "";
-    expressionToBeDisplayed = "";
   }
 };
 
@@ -272,12 +271,10 @@ const handleViewMemoryButtton = (): void => {
   buttonsDiv.style.display = "none";
   calculatorMemory.style.display = "block";
   backButton.style.display = "block";
-  backButton.style.height = "4rem";
 };
 
 const handleBackButton = (): void => {
   calculator.style.display = "grid";
-  calculator.style.flexDirection = "column";
   calculatorInput.style.display = "block";
   calculatorOutput.style.display = "block";
   buttonsDiv.style.display = "grid";
